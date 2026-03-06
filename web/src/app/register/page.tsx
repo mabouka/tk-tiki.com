@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiFetch } from '../../lib/api';
+import { apiFetch, setAuthToken } from '../../lib/api';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,10 +17,13 @@ export default function RegisterPage() {
     setLoading(true);
     setError('');
     try {
-      await apiFetch('/api/auth/register', {
+      const data = await apiFetch<{ token?: string }>('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify({ name, email, password })
       });
+      if (data.token) {
+        setAuthToken(data.token);
+      }
       router.push('/account/boards');
     } catch (err: any) {
       setError(err.message);

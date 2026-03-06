@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiFetch } from '../../lib/api';
+import { apiFetch, setAuthToken } from '../../lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,10 +16,13 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      await apiFetch('/api/auth/login', {
+      const data = await apiFetch<{ token?: string }>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password })
       });
+      if (data.token) {
+        setAuthToken(data.token);
+      }
       router.push('/account/boards');
     } catch (err: any) {
       setError(err.message);

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FormEvent, ReactNode, useEffect, useState } from 'react';
-import { apiFetch } from '../lib/api';
+import { apiFetch, setAuthToken } from '../lib/api';
 
 const links = [
   ['/admin', 'Dashboard'],
@@ -25,10 +25,13 @@ function AdminLoginForm({ error }: { error: string }) {
     setSubmitting(true);
     setFormError('');
     try {
-      await apiFetch('/api/auth/login', {
+      const data = await apiFetch<{ token?: string }>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password })
       });
+      if (data.token) {
+        setAuthToken(data.token);
+      }
       window.location.href = '/admin';
     } catch (err: any) {
       setFormError(err.message || 'Connexion impossible');

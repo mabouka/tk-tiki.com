@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { apiFetch } from '../lib/api';
+import { apiFetch, clearAuthToken } from '../lib/api';
 
 export function HeaderNav() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -21,6 +21,7 @@ export function HeaderNav() {
     try {
       await apiFetch('/api/auth/logout', { method: 'POST', body: JSON.stringify({}) });
     } finally {
+      clearAuthToken();
       setIsAuthenticated(false);
       setIsLoggingOut(false);
       window.location.href = '/';

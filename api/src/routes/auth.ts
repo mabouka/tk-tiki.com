@@ -56,6 +56,7 @@ router.post(
     setAuthCookie(res, token);
 
     res.status(201).json({
+      token,
       user: { id: user.id, email: user.email, name: user.name, role: user.role }
     });
   })
@@ -80,7 +81,10 @@ router.post(
     const token = signToken(user.id, user.role);
     setAuthCookie(res, token);
 
-    res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+    res.json({
+      token,
+      user: { id: user.id, email: user.email, name: user.name, role: user.role }
+    });
   })
 );
 

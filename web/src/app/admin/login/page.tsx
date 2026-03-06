@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiFetch } from '../../../lib/api';
+import { apiFetch, setAuthToken } from '../../../lib/api';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -13,10 +13,13 @@ export default function AdminLoginPage() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     try {
-      await apiFetch('/api/auth/login', {
+      const data = await apiFetch<{ token?: string }>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password })
       });
+      if (data.token) {
+        setAuthToken(data.token);
+      }
       router.push('/admin');
     } catch (err: any) {
       setError(err.message);
