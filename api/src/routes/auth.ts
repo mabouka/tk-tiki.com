@@ -27,10 +27,11 @@ function signToken(userId: string, role: Role) {
 }
 
 function setAuthCookie(res: any, token: string) {
+  const isProd = env.NODE_ENV === 'production';
   res.cookie('token', token, {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: env.NODE_ENV === 'production',
+    sameSite: isProd ? 'none' : 'lax',
+    secure: isProd,
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
 }
@@ -86,7 +87,12 @@ router.post(
 router.post(
   '/logout',
   asyncHandler(async (_req, res) => {
-    res.clearCookie('token');
+    const isProd = env.NODE_ENV === 'production';
+    res.clearCookie('token', {
+      httpOnly: true,
+      sameSite: isProd ? 'none' : 'lax',
+      secure: isProd
+    });
     res.json({ success: true });
   })
 );
