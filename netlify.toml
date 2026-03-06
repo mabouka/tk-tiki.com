@@ -1,11 +1,7 @@
 [build]
   base = "web"
   command = "npm run build"
-  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
   NEXT_PUBLIC_API_BASE_URL = "https://tk-tikicom-production.up.railway.app"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
