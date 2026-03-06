@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
-import { apiFetch } from '../../../lib/api';
+import { apiFetch, setAuthToken } from '../../../lib/api';
 import { Card, StatusBadge } from '../../../components/ui';
 
 type BoardPayload = {
@@ -28,6 +28,7 @@ export default function BoardPublicPage({ params }: { params: { publicId: string
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [contactLoading, setContactLoading] = useState(false);
+  const [claimLoading, setClaimLoading] = useState(false);
 
   useEffect(() => {
     apiFetch<BoardPayload>(`/api/boards/${params.publicId}/public`)
@@ -36,15 +37,34 @@ export default function BoardPublicPage({ params }: { params: { publicId: string
       .finally(() => setLoading(false));
   }, [params.publicId]);
 
-  async function claimBoard() {
+  async function registerAndClaim(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setClaimLoading(true);
     setNotice('');
     setError('');
+    const form = new FormData(e.currentTarget);
+    const payload = {
+      name: String(form.get('name') || ''),
+      email: String(form.get('email') || ''),
+      password: String(form.get('password') || '')
+    };
+
     try {
+      const register = await apiFetch<{ token?: string }>(`/api/auth/register`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      if (register.token) {
+        setAuthToken(register.token);
+      }
       await apiFetch(`/api/boards/${params.publicId}/claim`, { method: 'POST', body: JSON.stringify({}) });
-      setNotice('Board ajoutée à votre compte.');
+      setNotice('Compte créé et board ajoutée à votre compte.');
       setData((prev) => (prev ? { ...prev, board: { ...prev.board, status: 'active', isClaimed: true } } : prev));
+      (e.target as HTMLFormElement).reset();
     } catch (e: any) {
       setError(e.message);
+    } finally {
+      setClaimLoading(false);
     }
   }
 
@@ -106,17 +126,35 @@ export default function BoardPublicPage({ params }: { params: { publicId: string
         {error && <p className="error">{error}</p>}
 
         {isUnclaimed && (
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <Link className="btn outline" href="/login">
-              Se connecter
-            </Link>
-            <Link className="btn outline" href="/register">
-              Créer un compte
-            </Link>
-            <button className="btn" onClick={claimBoard}>
-              Ajouter cette planche à mon compte
-            </button>
-          </div>
+          <Card>
+            <h2 className="h2">Ceci est votre Tiki ?</h2>
+            <p className="muted" style={{ marginTop: 0 }}>
+              Créez votre compte et réclamez cette board en une seule étape.
+            </p>
+            <form className="grid" onSubmit={registerAndClaim}>
+              <div>
+                <label className="label">Nom</label>
+                <input className="input" name="name" required />
+              </div>
+              <div>
+                <label className="label">Email</label>
+                <input className="input" name="email" type="email" required />
+              </div>
+              <div>
+                <label className="label">Mot de passe</label>
+                <input className="input" name="password" type="password" minLength={8} required />
+              </div>
+              <button className="btn" disabled={claimLoading}>
+                {claimLoading ? 'Création...' : 'Créer mon compte et réclamer cette board'}
+              </button>
+            </form>
+            <p className="muted" style={{ marginTop: 10 }}>
+              Déjà un compte ?{' '}
+              <Link href="/login" style={{ textDecoration: 'underline' }}>
+                Se connecter
+              </Link>
+            </p>
+          </Card>
         )}
       </Card>
 
