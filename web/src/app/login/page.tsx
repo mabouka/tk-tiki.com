@@ -16,14 +16,14 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const data = await apiFetch<{ token?: string }>('/api/auth/login', {
+      const data = await apiFetch<{ token?: string; user?: { role?: string } }>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password })
       });
       if (data.token) {
         setAuthToken(data.token);
       }
-      router.push('/account/boards');
+      router.push(data.user?.role === 'ADMIN' ? '/admin' : '/account/boards');
     } catch (err: any) {
       setError(err.message);
     } finally {
