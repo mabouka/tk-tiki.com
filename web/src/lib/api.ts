@@ -18,15 +18,17 @@ export function getAuthToken() {
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getAuthToken();
-  const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+  const headers = new Headers(init?.headers);
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
 
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...authHeader,
-      ...(init?.headers || {})
-    },
+    headers,
     credentials: 'include',
     cache: 'no-store'
   });
