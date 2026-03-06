@@ -1,0 +1,13 @@
+{
+  "name": "tk-nfc-boards",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": ["api", "web"],
+  "scripts": {
+    "dev": "npm run dev -w api & npm run dev -w web",
+    "build": "npm run build -w api && npm run build -w web",
+    "test": "npm run test -w api",
+    "prisma:migrate": "npm run prisma:migrate -w api",
+    "prisma:seed": "npm run prisma:seed -w api"
+  }
+}

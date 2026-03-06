@@ -1,0 +1,12 @@
+process.env.NODE_ENV = 'test';
+process.env.PORT = '4000';
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test?schema=public';
+process.env.JWT_SECRET = 'test_secret_123456789';
+process.env.APP_BASE_URL = 'http://localhost:3000';
+process.env.API_BASE_URL = 'http://localhost:4000';
+process.env.PUBLIC_SITE_URL = 'https://tk.com';
+process.env.SMTP_HOST = 'localhost';
+process.env.SMTP_PORT = '1025';
+process.env.SMTP_FROM = 'no-reply@tk.com';
+process.env.ADMIN_EMAIL = 'admin@tk.com';
+process.env.ADMIN_PASSWORD = 'Admin123!';
