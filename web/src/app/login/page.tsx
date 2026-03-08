@@ -52,9 +52,6 @@ export default function LoginPage() {
         <button type="button" className="btn outline" onClick={() => signIn('facebook', { callbackUrl: '/account/boards' })}>
           Continuer avec Facebook
         </button>
-        <button type="button" className="btn outline" onClick={() => signIn('apple', { callbackUrl: '/account/boards' })}>
-          Continuer avec Apple
-        </button>
       </div>
     </form>
   );
