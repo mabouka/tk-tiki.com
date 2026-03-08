@@ -5,6 +5,7 @@ Application complète pour gérer des planches de kitesurf identifiées par NFC.
 ## Stack
 
 - Frontend: Next.js + TypeScript
+- Auth social web: Auth.js (NextAuth) Google/Facebook/Apple
 - Backend: Node.js + Express + TypeScript
 - ORM: Prisma
 - DB: PostgreSQL
@@ -49,6 +50,7 @@ Entités implémentées:
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
 - `GET /api/auth/me`
+- `POST /api/auth/oauth` (bridge social login Auth.js -> token API)
 
 ### Public boards
 
@@ -133,6 +135,18 @@ URLs:
 - Web: [http://localhost:3000](http://localhost:3000)
 - API: [http://localhost:4000](http://localhost:4000)
 - Mailhog: [http://localhost:8025](http://localhost:8025)
+
+## OAuth social (Auth.js)
+
+Le frontend supporte Google / Facebook / Apple via Auth.js (`/api/auth/[...nextauth]`).
+
+Variables à configurer:
+
+- `NEXTAUTH_URL`
+- `NEXTAUTH_SECRET`
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`
+- `FACEBOOK_CLIENT_ID` / `FACEBOOK_CLIENT_SECRET`
+- `APPLE_CLIENT_ID` / `APPLE_TEAM_ID` / `APPLE_KEY_ID` / `APPLE_PRIVATE_KEY`
 
 ## Lancement local sans Docker
 

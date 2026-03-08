@@ -3,6 +3,7 @@
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch, setAuthToken } from '../../lib/api';
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -44,6 +45,17 @@ export default function LoginPage() {
       <button className="btn" disabled={loading} style={{ marginTop: 14 }}>
         {loading ? 'Connexion...' : 'Se connecter'}
       </button>
+      <div style={{ marginTop: 16, display: 'grid', gap: 8 }}>
+        <button type="button" className="btn outline" onClick={() => signIn('google', { callbackUrl: '/account/boards' })}>
+          Continuer avec Google
+        </button>
+        <button type="button" className="btn outline" onClick={() => signIn('facebook', { callbackUrl: '/account/boards' })}>
+          Continuer avec Facebook
+        </button>
+        <button type="button" className="btn outline" onClick={() => signIn('apple', { callbackUrl: '/account/boards' })}>
+          Continuer avec Apple
+        </button>
+      </div>
     </form>
   );
 }

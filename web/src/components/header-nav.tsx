@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { apiFetch, clearAuthToken } from '../lib/api';
+import { signOut } from 'next-auth/react';
 
 export function HeaderNav() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,6 +23,7 @@ export function HeaderNav() {
       await apiFetch('/api/auth/logout', { method: 'POST', body: JSON.stringify({}) });
     } finally {
       clearAuthToken();
+      await signOut({ redirect: false });
       setIsAuthenticated(false);
       setIsLoggingOut(false);
       window.location.href = '/';

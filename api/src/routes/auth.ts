@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { z } from 'zod';
 import { Role } from '@prisma/client';
 import { prisma } from '../prisma';
@@ -20,6 +21,13 @@ const registerSchema = z.object({
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1)
+});
+
+const oauthSchema = z.object({
+  provider: z.enum(['google', 'facebook', 'apple']),
+  providerAccountId: z.string().min(1),
+  email: z.string().email(),
+  name: z.string().min(1).max(120).optional()
 });
 
 function signToken(userId: string, role: Role) {
@@ -76,6 +84,34 @@ router.post(
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) {
       throw new HttpError(401, 'Invalid credentials');
+    }
+
+    const token = signToken(user.id, user.role);
+    setAuthCookie(res, token);
+
+    res.json({
+      token,
+      user: { id: user.id, email: user.email, name: user.name, role: user.role }
+    });
+  })
+);
+
+router.post(
+  '/oauth',
+  validateBody(oauthSchema),
+  asyncHandler(async (req, res) => {
+    const { email, name } = req.body;
+
+    let user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      const passwordHash = await bcrypt.hash(crypto.randomUUID(), 10);
+      user = await prisma.user.create({
+        data: {
+          email,
+          name,
+          passwordHash
+        }
+      });
     }
 
     const token = signToken(user.id, user.role);
